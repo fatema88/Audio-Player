@@ -1,29 +1,33 @@
 #include "MainComponent.h"
 
-//==============================================================================
 MainComponent::MainComponent()
 {
-    setSize (600, 400);
+    addAndMakeVisible(player1);
+    setSize(500, 250);
+    setAudioChannels(0, 2);
 }
 
 MainComponent::~MainComponent()
 {
+    shutdownAudio();
 }
 
-//==============================================================================
-void MainComponent::paint (juce::Graphics& g)
+void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
+}
 
-    g.setFont (juce::FontOptions (16.0f));
-    g.setColour (juce::Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
+void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+    player1.getNextAudioBlock(bufferToFill);
+}
+
+void MainComponent::releaseResources()
+{
+    player1.releaseResources();
 }
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+    player1.setBounds(getLocalBounds());
 }
