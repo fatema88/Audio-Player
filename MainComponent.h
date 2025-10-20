@@ -12,6 +12,8 @@ public:
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
     void resized() override;
+    void timerCallback() override;
+
 
 private:
     PlayerGUI player1;
