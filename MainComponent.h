@@ -2,7 +2,7 @@
 #include "JuceHeader.h"
 #include "PlayerGUI.h"
 
-class MainComponent : public juce::AudioAppComponent
+class MainComponent : public juce::AudioAppComponent,public juce::Timer
 {
 public:
     MainComponent();
