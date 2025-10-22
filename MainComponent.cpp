@@ -38,5 +38,5 @@ void MainComponent::resized()
 void MainComponent::timerCallback()
 {
     
-    player1.getNextAudioBlock(juce::AudioSourceChannelInfo());
+  
 }
