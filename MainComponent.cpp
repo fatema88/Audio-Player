@@ -5,9 +5,8 @@ MainComponent::MainComponent()
     addAndMakeVisible(player1);
     setSize(500, 250);
     setAudioChannels(0, 2);
-
-    // 👇 السطر الجديد ده بيخلي JUCE يحدث الصوت باستمرار لو في loop
-    startTimerHz(30); // 30 مرة في الثانية لتحديث الحالة
+    startTimer(30);
+    
 }
 
 MainComponent::~MainComponent()
