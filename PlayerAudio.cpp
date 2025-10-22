@@ -38,8 +38,10 @@ bool PlayerAudio::loadFile(const juce::File& file)
 
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
         transportSource.setLooping(true);
+        
         return true;
     }
+    juce::Logger::writeToLog("failed to load the file");
     return false;
 }
 
