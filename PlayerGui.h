@@ -1,3 +1,4 @@
+
 #pragma once
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
@@ -25,21 +26,21 @@ private:
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
     juce::TextButton pauseButton{ "Pause" };
-    juce::TextButton goToStartButton{ "<<" };         
-    juce::TextButton goToEndButton{ ">>" }; 
-    juce::TextButton muteButton{ "Mute" }
+    juce::TextButton goToStartButton{ "<<" };
+    juce::TextButton goToEndButton{ ">>" };
+    juce::TextButton muteButton{ "Mute" };
     bool isMuted = false;
     float previousVol = 0.5f;
-   
+
     juce::Slider volumeSlider;
     std::unique_ptr<juce::FileChooser> fileChooser;
-     bool isLooping = false;
-    
+    bool isLooping = false;
+
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
-    void pauseButtonClicked();         
-    void goToStartButtonClicked();     
-    void goToEndButtonClicked();         
+    void pauseButtonClicked();
+    void goToStartButtonClicked();
+    void goToEndButtonClicked();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
