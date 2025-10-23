@@ -36,10 +36,16 @@ void PlayerGUI::resized()
     int y = 20;
     loadButton.setBounds(20, y, 100, 40);
     restartButton.setBounds(140, y, 80, 40);
-    stopButton.setBounds(240, y, 80, 40);
-    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
-    loopButton.setBounds(340, y, 80, 40);
+    pauseButton.setBounds(240, y, 80, 40);   
+    stopButton.setBounds(340, y, 80, 40);
+    loopButton.setBounds(440, y, 80, 40);
 
+   
+    int y2 = y + 50; 
+    goToStartButton.setBounds(20, y2, 60, 40);  
+    goToEndButton.setBounds(100, y2, 60, 40);  
+
+    volumeSlider.setBounds(20, 150, getWidth() - 40, 30);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -141,5 +147,6 @@ void PlayerGUI::goToEndButtonClicked()
 {
     playerAudio.goToEnd();
 }
+
 
 
