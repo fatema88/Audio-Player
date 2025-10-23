@@ -44,7 +44,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         fileChooser = std::make_unique<juce::FileChooser>(
             "Select an audio file...",
             juce::File{},
-            ".wav;.mp3");
+            ".wav;*.mp3");
 
         fileChooser->launchAsync(
             juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
@@ -61,9 +61,19 @@ void PlayerGUI::buttonClicked(juce::Button* button)
 
     if (button == &restartButton)
         playerAudio.play();
+    
+    if (button == &pauseButton)         
+    pauseButtonClicked();
 
     if (button == &stopButton)
         playerAudio.stop();
+    
+      if (button == &goToStartButton)   
+      goToStartButtonClicked();
+
+  if (button == &goToEndButton)     
+      goToEndButtonClicked();
+    
     if (button == &loopButton)
     {
         isLooping = !isLooping; 
@@ -94,3 +104,19 @@ void PlayerGUI::releaseResources()
 {
     playerAudio.releaseResources();
 }
+
+void PlayerGUI::pauseButtonClicked()
+{
+    playerAudio.pause();
+}
+
+void PlayerGUI::goToStartButtonClicked()
+{
+    playerAudio.goToStart();
+}
+
+void PlayerGUI::goToEndButtonClicked()
+{
+    playerAudio.goToEnd();
+}
+
