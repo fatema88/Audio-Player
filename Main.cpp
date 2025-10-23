@@ -43,3 +43,4 @@ private:
 };
 
 START_JUCE_APPLICATION(Application)
+
