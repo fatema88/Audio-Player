@@ -8,10 +8,10 @@ PlayerGUI::PlayerGUI()
         addAndMakeVisible(btn);
     }
     for (auto* btn : { &pauseButton, &goToStartButton, &goToEndButton })
-{
-    btn->addListener(this);
-    addAndMakeVisible(btn);
-}
+    {
+        btn->addListener(this);
+        addAndMakeVisible(btn);
+    }
 
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
@@ -66,46 +66,44 @@ void PlayerGUI::buttonClicked(juce::Button* button)
 
     if (button == &restartButton)
         playerAudio.play();
-    
-    if (button == &pauseButton)         
-    pauseButtonClicked();
+
+    if (button == &pauseButton)
+        pauseButtonClicked();
 
     if (button == &stopButton)
         playerAudio.stop();
-    
-      if (button == &goToStartButton)   
-      goToStartButtonClicked();
 
-  if (button == &goToEndButton)     
-      goToEndButtonClicked();
-    
+    if (button == &goToStartButton)
+        goToStartButtonClicked();
+
+    if (button == &goToEndButton)
+        goToEndButtonClicked();
+
     if (button == &loopButton)
     {
-        isLooping = !isLooping; 
+        isLooping = !isLooping;
         loopButton.setButtonText(isLooping ? "Loop: ON" : "Loop: OFF");
         playerAudio.setLooping(isLooping);
     }
 
-        if (button == mutebutton){
-        if(!isMuted){
-            previousvol = volumeSlider.getValue();
-            playerAudio->setGain(0,0f);
-            volumeSlider.setValue(0,0);
-            mutebutton.setButtonText("Unmuted");
+    if (button == &muteButton) {
+        if (!isMuted) {
+            previousVol = volumeSlider.getValue();
+            playerAudio.setGain(0.0f);
+            volumeSlider.setValue(0.0);
+            muteButton.setButtonText("Unmute");
             isMuted = true;
         }
-
-        else
-        {
-            playerAudio->setGain(previousvol);
-            volumeSlider.setvalue(previousvol);
-            mutebutton.setButtonText("Mute");
+        else {
+            playerAudio.setGain(previousVol);
+            volumeSlider.setValue(previousVol);
+            muteButton.setButtonText("Mute");
             isMuted = false;
         }
-
+    }
 }
 
-}
+
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
