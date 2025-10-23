@@ -86,6 +86,25 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.setLooping(isLooping);
     }
 
+        if (button == mutebutton){
+        if(!isMuted){
+            previousvol = volumeSlider.getValue();
+            playerAudio->setGain(0,0f);
+            volumeSlider.setValue(0,0);
+            mutebutton.setButtonText("Unmuted");
+            isMuted = true;
+        }
+
+        else
+        {
+            playerAudio->setGain(previousvol);
+            volumeSlider.setvalue(previousvol);
+            mutebutton.setButtonText("Mute");
+            isMuted = false;
+        }
+
+}
+
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
