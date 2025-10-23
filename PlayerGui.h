@@ -24,12 +24,20 @@ private:
     juce::TextButton restartButton{ "Restart" };
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
-    bool isLooping = false;
+    juce::TextButton pauseButton{ "Pause" };
+    juce::TextButton goToStartButton{ "<<" };         
+    juce::TextButton goToEndButton{ ">>" }; 
+   
     juce::Slider volumeSlider;
     std::unique_ptr<juce::FileChooser> fileChooser;
-
+     bool isLooping = false;
+    
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
+    void pauseButtonClicked();         
+    void goToStartButtonClicked();     
+    void goToEndButtonClicked();         
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
+
