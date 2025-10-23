@@ -7,6 +7,11 @@ PlayerGUI::PlayerGUI()
         btn->addListener(this);
         addAndMakeVisible(btn);
     }
+    for (auto* btn : { &pauseButton, &goToStartButton, &goToEndButton })
+{
+    btn->addListener(this);
+    addAndMakeVisible(btn);
+}
 
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
@@ -119,4 +124,5 @@ void PlayerGUI::goToEndButtonClicked()
 {
     playerAudio.goToEnd();
 }
+
 
