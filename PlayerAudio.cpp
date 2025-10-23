@@ -78,5 +78,30 @@ void PlayerAudio::updateLoop()
         }
     }
 }
+void PlayerAudio::pause()
+{
+    if (transportSource.isPlaying())
+    {
+        transportSource.stop();
+        isPaused = true;
+    }
+}
+
+void PlayerAudio::goToStart()
+{
+    transportSource.setPosition(0.0);
+}
+
+void PlayerAudio::goToEnd()
+{
+    double length = getLength();
+    if (length > 0.0)
+        transportSource.setPosition(length);
+}
+
+bool PlayerAudio::isPlaying() const
+{
+    return transportSource.isPlaying();
+}
 
 
