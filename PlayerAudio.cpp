@@ -1,4 +1,3 @@
-
 #include "PlayerAudio.h"
 
 PlayerAudio::PlayerAudio()
@@ -67,12 +66,12 @@ void PlayerAudio::setPosition(double pos)
 }
 
 
-double PlayerAudio::getPosition() const 
+double PlayerAudio::getPosition() const
 {
     return transportSource.getCurrentPosition();
 }
 
-double PlayerAudio::getLength() const  
+double PlayerAudio::getLength() const
 {
     return transportSource.getLengthInSeconds();
 }
@@ -120,6 +119,5 @@ bool PlayerAudio::isPlaying() const
 {
     return transportSource.isPlaying();
 }
-
 
 
