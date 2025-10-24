@@ -1,8 +1,9 @@
+
 #pragma once
 #include "JuceHeader.h"
 #include "PlayerGUI.h"
 
-class MainComponent : public juce::AudioAppComponent,public juce::Timer
+class MainComponent : public juce::AudioAppComponent, public juce::Timer
 {
 public:
     MainComponent();
