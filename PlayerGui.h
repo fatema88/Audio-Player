@@ -23,10 +23,10 @@ private:
 
     juce::TextButton loadButton{ "Load File" };
     juce::TextButton restartButton{ "Restart" };
-    juce::TextButton playButton{ "Play" };
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
     juce::TextButton pauseButton{ "Pause" };
+    juce::TextButton playButton{ "Play" };
     juce::TextButton goToStartButton{ "<<" };
     juce::TextButton goToEndButton{ ">>" };
     juce::TextButton muteButton{ "Mute" };
@@ -45,5 +45,4 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
-
 
