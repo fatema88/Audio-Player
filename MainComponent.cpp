@@ -1,3 +1,4 @@
+
 #include "MainComponent.h"
 
 MainComponent::MainComponent()
@@ -6,7 +7,7 @@ MainComponent::MainComponent()
     setSize(500, 250);
     setAudioChannels(0, 2);
     startTimer(30);
-    
+
 }
 
 MainComponent::~MainComponent()
@@ -37,6 +38,6 @@ void MainComponent::resized()
 
 void MainComponent::timerCallback()
 {
-    
-  
+
+
 }
