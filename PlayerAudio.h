@@ -13,6 +13,16 @@ public:
     void releaseResources();
     void setLooping(bool shouldLoop);
     void updateLoop();
+    void setLoopPoints(double start, double end);
+    void clearLoopPoints();
+    double loopStart = 0.0;
+    double loopEnd = 0.0;
+    bool ABloop = false;
+    double aPoint = 0.0;
+    double bPoint = 0.0;
+	void setSpeed(double speed);
+    
+
 
 
 
