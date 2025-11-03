@@ -20,12 +20,7 @@ public:
     bool ABloop = false;
     double aPoint = 0.0;
     double bPoint = 0.0;
-	void setSpeed(double speed);
-    
-
-
-
-
+    void setSpeed(double speed);
     bool loadFile(const juce::File& file);
     void play();
     void stop();
@@ -38,9 +33,24 @@ public:
     void goToEnd();
     bool isPlaying() const;
 
+    juce::StringArray getMetadata() const;
+    juce::String getTitle() const;
+    juce::String getArtist() const;
+    juce::String getAlbum() const;
+    juce::String getFormattedDuration() const;
+
+    void setReverbLevel(float level);
+    void setReverbEnabled(bool enabled);
+
 private:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
+    juce::File currentFile;
     bool isPaused = false;
+
+    juce::Reverb reverb;
+    bool reverbEnabled = false;
+    float reverbLevel = 0.0f;
 };
+
