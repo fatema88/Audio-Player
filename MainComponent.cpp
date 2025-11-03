@@ -6,9 +6,8 @@ MainComponent::MainComponent()
 {
     addAndMakeVisible(player1);
     addAndMakeVisible(player2);
-    setSize(800, 400);
+    setSize(800, 500);
     setAudioChannels(0, 2);
-    startTimer(30);
 
 
 
@@ -48,8 +47,3 @@ void MainComponent::resized()
 }
 
 
-void MainComponent::timerCallback()
-{
-
-
-}
