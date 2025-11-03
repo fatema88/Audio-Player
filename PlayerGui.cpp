@@ -93,43 +93,45 @@ void PlayerGUI::paint(juce::Graphics& g)
 
 void PlayerGUI::resized()
 {
-    int y = 20;
-
-
-    loadButton.setBounds(20, y, 100, 40);
-    playButton.setBounds(130, y, 80, 40);
-    pauseButton.setBounds(220, y, 80, 40);
-    stopButton.setBounds(310, y, 80, 40);
-    restartButton.setBounds(400, y, 80, 40);
-    loopButton.setBounds(490, y, 100, 40);
-
-    y += 60;
-    positionSlider.setBounds(20, y, getWidth() - 40, 25);
+    int y = 10;
+    int margin = 10;
+    
+    loadButton.setBounds(margin, y, 80, 30);
+    playButton.setBounds(100, y, 60, 30);
+    pauseButton.setBounds(170, y, 60, 30);
+    stopButton.setBounds(240, y, 60, 30);
+    restartButton.setBounds(310, y, 70, 30);
+    loopButton.setBounds(390, y, 80, 30);
 
     y += 40;
-    goToStartButton.setBounds(20, y, 90, 35);
-    prevButton.setBounds(120, y, 90, 35);
-    nextButton.setBounds(220, y, 90, 35);
-    goToEndButton.setBounds(320, y, 90, 35);
+    positionSlider.setBounds(margin, y, getWidth() - 2 * margin, 20);
 
-    y += 50;
-    volumeSlider.setBounds(20, y, 150, 25);
-    muteButton.setBounds(180, y, 80, 35);
-    reverbToggle.setBounds(270, y, 100, 35);
-    reverbSlider.setBounds(380, y, 150, 25);
+    y += 30;
+    prevButton.setBounds(margin, y, 60, 25);
+    nextButton.setBounds(70, y, 60, 25);
+    goToStartButton.setBounds(140, y, 70, 25);
+    goToEndButton.setBounds(220, y, 70, 25);
 
-    y += 45;
-    metadataDisplay.setBounds(20, y, getWidth() - 40, 70);
+    y += 35;
+    volumeSlider.setBounds(margin, y, 100, 20);
+    muteButton.setBounds(110, y, 60, 25);
+    reverbToggle.setBounds(180, y, 80, 25);
+    reverbSlider.setBounds(270, y, 100, 20);
 
-    y += 80;
-    playlistBox.setBounds(20, y, getWidth() - 40, 180);
+    y += 35;
+    metadataDisplay.setBounds(margin, y, getWidth() - 2 * margin, 60);
 
-    y += 190;
-    removeButton.setBounds(20, y, 90, 35);
-    clearButton.setBounds(120, y, 90, 35);
-    setAButton.setBounds(220, y, 80, 35);
-    setBButton.setBounds(310, y, 80, 35);
-    clearABButton.setBounds(400, y, 100, 35);
+    y += 70;
+    playlistBox.setBounds(margin, y, getWidth() - 2 * margin, 100);
+
+    y += 110;
+    removeButton.setBounds(margin, y, 80, 25);
+    clearButton.setBounds(90, y, 80, 25);
+
+    y += 35;
+    setAButton.setBounds(margin, y, 80, 25);
+    setBButton.setBounds(90, y, 80, 25);
+    clearABButton.setBounds(180, y, 90, 25);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -495,3 +497,4 @@ void PlayerGUI::timerCallback()
 
     playlistBox.repaint();
 }
+
