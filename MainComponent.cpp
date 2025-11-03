@@ -6,7 +6,7 @@ MainComponent::MainComponent()
 {
     addAndMakeVisible(player1);
     addAndMakeVisible(player2);
-    setSize(800, 500);
+    setSize(900, 700);
     setAudioChannels(0, 2);
 
 
@@ -45,5 +45,6 @@ void MainComponent::resized()
     player2.setBounds(area);
 
 }
+
 
 
