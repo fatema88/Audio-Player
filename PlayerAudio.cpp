@@ -167,8 +167,6 @@ void PlayerAudio::setReverbEnabled(bool enabled)
     reverbEnabled = enabled;
 }
 
-
-
 juce::StringArray PlayerAudio::getMetadata() const
 {
     juce::StringArray metadata;
@@ -178,7 +176,6 @@ juce::StringArray PlayerAudio::getMetadata() const
         metadata.add("No file loaded");
         return metadata;
     }
-
 
     metadata.add("File Name: " + currentFile.getFileName());
     metadata.add("File Size: " + juce::String(currentFile.getSize() / 1024) + " KB");
@@ -197,22 +194,30 @@ juce::StringArray PlayerAudio::getMetadata() const
         return metadata;
     }
 
-
     metadata.add("Sample Rate: " + juce::String(reader->sampleRate) + " Hz");
     metadata.add("Channels: " + juce::String(reader->numChannels));
     metadata.add("Bit Depth: " + juce::String(reader->bitsPerSample));
-    metadata.add("Total Samples: " + juce::String(reader->lengthInSamples));
-
 
     auto& allMetadata = reader->metadataValues;
 
     juce::String title = allMetadata.getValue("Title", "");
-    juce::String artist = allMetadata.getValue("Artist", "");
-    juce::String album = allMetadata.getValue("Album", "");
-    juce::String year = allMetadata.getValue("Year", "");
-    juce::String genre = allMetadata.getValue("Genre", "");
-    juce::String comment = allMetadata.getValue("Comment", "");
+    if (title.isEmpty()) title = allMetadata.getValue("TITLE", "");
+    if (title.isEmpty()) title = allMetadata.getValue("INAM", "");
 
+    juce::String artist = allMetadata.getValue("Artist", "");
+    if (artist.isEmpty()) artist = allMetadata.getValue("ARTIST", "");
+    if (artist.isEmpty()) artist = allMetadata.getValue("IART", "");
+
+    juce::String album = allMetadata.getValue("Album", "");
+    if (album.isEmpty()) album = allMetadata.getValue("ALBUM", "");
+
+    juce::String year = allMetadata.getValue("Year", "");
+    if (year.isEmpty()) year = allMetadata.getValue("DATE", "");
+
+    juce::String genre = allMetadata.getValue("Genre", "");
+    if (genre.isEmpty()) genre = allMetadata.getValue("GENRE", "");
+
+    juce::String comment = allMetadata.getValue("Comment", "");
 
     if (title.isNotEmpty())
     {
@@ -220,7 +225,6 @@ juce::StringArray PlayerAudio::getMetadata() const
     }
     else
     {
-  
         metadata.add("Title: " + currentFile.getFileNameWithoutExtension());
     }
 
@@ -230,24 +234,56 @@ juce::StringArray PlayerAudio::getMetadata() const
     }
     else
     {
-        metadata.add("Artist: Unknown Artist");
+        juce::String filename = currentFile.getFileNameWithoutExtension();
+        juce::String possibleArtist = extractArtistFromFilename(filename);
+        if (possibleArtist.isNotEmpty())
+        {
+            metadata.add("Artist: " + possibleArtist);
+        }
+        else
+        {
+            metadata.add("Artist: Unknown Artist");
+        }
     }
 
     if (album.isNotEmpty()) metadata.add("Album: " + album);
     if (year.isNotEmpty()) metadata.add("Year: " + year);
     if (genre.isNotEmpty()) metadata.add("Genre: " + genre);
     if (comment.isNotEmpty()) metadata.add("Comment: " + comment);
-
-
-    if (title.isEmpty() && artist.isEmpty() && album.isEmpty())
+    if (title.isEmpty() && artist.isEmpty() && album.isEmpty() && year.isEmpty())
     {
         metadata.add("No embedded metadata found in file");
-        metadata.add("Displaying basic file information");
     }
 
     return metadata;
 }
-
+juce::String PlayerAudio::extractArtistFromFilename(const juce::String& filename) const
+{
+    juce::String result;
+    int dashIndex = filename.indexOf(" - ");
+    if (dashIndex > 0)
+    {
+        result = filename.substring(0, dashIndex).trim();
+    }
+    if (result.isEmpty())
+    {
+        int underscoreIndex = filename.indexOf("_");
+        if (underscoreIndex > 0)
+        {
+            result = filename.substring(0, underscoreIndex).trim();
+        }
+    }
+    if (result.isEmpty())
+    {
+        int colonIndex = filename.indexOf(":");
+        if (colonIndex > 0)
+        {
+            result = filename.substring(0, colonIndex).trim();
+        }
+    }
+    
+    return result;
+}
 juce::String PlayerAudio::getTitle() const
 {
     if (!readerSource) return currentFile.getFileName();
@@ -295,5 +331,6 @@ juce::String PlayerAudio::getFormattedDuration() const
 
     return juce::String::formatted("%02d:%02d", minutes, secs);
 }
+
 
 
