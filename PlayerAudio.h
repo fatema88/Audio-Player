@@ -52,5 +52,7 @@ private:
     juce::Reverb reverb;
     bool reverbEnabled = false;
     float reverbLevel = 0.0f;
+    juce::String extractArtistFromFilename(const juce::String& filename) const;
 };
+
 
