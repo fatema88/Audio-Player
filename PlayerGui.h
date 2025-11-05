@@ -29,7 +29,14 @@ public:
     juce::Component* refreshComponentForRow(int rowNumber, bool isRowSelected,
         juce::Component* existingComponentToUpdate) override;
 
-    void timerCallback() override; 
+    void timerCallback() override;
+    std::vector<juce::File> playlist;
+    int currentTrackIndex = -1;
+    void loadTrack(int trackIndex);
+    void setGain(float gain) { playerAudio.setGain(gain); }
+    void play() { playerAudio.play(); }
+    void stop() { playerAudio.stop(); }
+    bool hasTracks() const { return !playlist.empty(); }
 
 private:
     PlayerAudio playerAudio;
@@ -39,6 +46,7 @@ private:
 
     juce::Slider positionSlider;
     juce::Label posLabel{ "Position", "00:00" };
+    juce::Label durationLabel{ "Duration", "00:00" };
 
     juce::TextButton loadButton{ "Load File" };
     juce::TextButton restartButton{ "Restart" };
@@ -54,7 +62,9 @@ private:
     juce::TextButton clearABButton{ "Clear AB" };
     juce::ToggleButton reverbToggle{ "Reverb" };
     juce::Slider reverbSlider;
+    juce::Slider speedSlider;
     juce::Label reverbLabel{ "Reverb Level", "Reverb:" };
+    juce::Label speedLabel{ "Speed", "Speed:" };
 
     juce::TextEditor metadataDisplay;
 
@@ -63,9 +73,6 @@ private:
     juce::TextButton prevButton{ "< Prev" };
     juce::TextButton removeButton{ "Remove" };
     juce::TextButton clearButton{ "Clear All" };
-
-    std::vector<juce::File> playlist;
-    int currentTrackIndex = -1;
 
     bool isMuted = false;
     float previousVol = 0.5f;
@@ -84,6 +91,7 @@ private:
     void updatePlaylistDisplay();
     void removeSelectedTrack();
     void clearPlaylist();
+    void updatePositionDisplay();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
