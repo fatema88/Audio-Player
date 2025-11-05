@@ -4,8 +4,8 @@
 class Application : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override       { return "Audio Player"; }
-    const juce::String getApplicationVersion() override    { return "1.0"; }
+    const juce::String getApplicationName() override { return "Audio Player"; }
+    const juce::String getApplicationVersion() override { return "1.0"; }
 
     void initialise(const juce::String&) override
     {
@@ -28,13 +28,21 @@ public:
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true);
-            centreWithSize(getWidth(), getHeight());
+            setResizable(true, true);
+            setResizeLimits(900, 700, 2000, 1500);
+            centreWithSize(1000, 800);
             setVisible(true);
         }
 
         void closeButtonPressed() override
         {
             juce::JUCEApplication::getInstance()->systemRequestedQuit();
+        }
+        void resized() override
+        {
+            DocumentWindow::resized();
+            if (auto* content = getContentComponent())
+                content->resized();
         }
     };
 
