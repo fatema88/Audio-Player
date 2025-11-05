@@ -40,13 +40,14 @@ PlayerGUI::PlayerGUI()
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
+   
+    positionSlider.setSliderStyle(juce::Slider::LinearBar);
+    positionSlider.setRange(0.0, 1.0);
+    positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    positionSlider.setColour(juce::Slider::trackColourId, juce::Colours::lightblue);   
+    positionSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::darkgrey);   
 
-   positionSlider.setRange(0.0, 1.0);
-   positionSlider.setValue(0.0);
-   positionSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-   positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-   positionSlider.addListener(this);
-   addAndMakeVisible(positionSlider);
+ addAndMakeVisible(positionSlider);
     
     addAndMakeVisible(positionSlider);
     addAndMakeVisible(posLabel);
@@ -97,6 +98,15 @@ PlayerGUI::~PlayerGUI() {}
 void PlayerGUI::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey);
+    if (positionSlider.isVisible())
+    {
+        auto bounds = positionSlider.getBounds();
+        double progress = positionSlider.getValue();
+        int pointerX = bounds.getX() + (int)(bounds.getWidth() * progress);
+      
+        g.setColour(juce::Colours::red);
+        g.drawLine(pointerX, bounds.getY(), pointerX, bounds.getBottom(), 2.0f);
+    }
 }
 
 void PlayerGUI::resized()
@@ -548,4 +558,5 @@ void PlayerGUI::timerCallback()
 
     playlistBox.repaint();
 }
+
 
