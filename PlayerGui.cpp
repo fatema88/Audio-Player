@@ -14,22 +14,12 @@ PlayerGUI::PlayerGUI()
         addAndMakeVisible(btn);
     }
 
-    nextButton.addListener(this);
-    prevButton.addListener(this);
-    removeButton.addListener(this);
-    clearButton.addListener(this);
-    addAndMakeVisible(nextButton);
-    addAndMakeVisible(prevButton);
-    addAndMakeVisible(removeButton);
-    addAndMakeVisible(clearButton);
-
-    setAButton.addListener(this);
-    setBButton.addListener(this);
-    clearABButton.addListener(this);
-    addAndMakeVisible(setAButton);
-    addAndMakeVisible(setBButton);
-    addAndMakeVisible(clearABButton);
-
+    for (auto* btn : { &nextButton, &prevButton, &removeButton, &clearButton, &setAButton, &setBButton, &clearABButton, &muteButton })
+    {
+        btn->addListener(this);
+        addAndMakeVisible(btn);
+    }
+    
     reverbToggle.addListener(this);
     reverbToggle.setToggleState(false, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(reverbToggle);
@@ -40,6 +30,12 @@ PlayerGUI::PlayerGUI()
     addAndMakeVisible(reverbSlider);
     addAndMakeVisible(reverbLabel);
 
+    speedSlider.setRange(0.5, 2.0, 0.1);
+    speedSlider.setValue(1.0);
+    speedSlider.addListener(this);
+    addAndMakeVisible(speedSlider);
+    addAndMakeVisible(speedLabel);
+
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
@@ -48,9 +44,10 @@ PlayerGUI::PlayerGUI()
     positionSlider.setRange(0.0, 1.0);
     positionSlider.addListener(this);
     addAndMakeVisible(positionSlider);
-
-    muteButton.addListener(this);
-    addAndMakeVisible(muteButton);
+    addAndMakeVisible(posLabel);
+    addAndMakeVisible(durationLabel);
+    posLabel.setText("00:00", juce::dontSendNotification);
+    durationLabel.setText("00:00", juce::dontSendNotification);
 
     metadataDisplay.setReadOnly(true);
     metadataDisplay.setMultiLine(true);
@@ -63,7 +60,11 @@ PlayerGUI::PlayerGUI()
     playlistBox.setColour(juce::ListBox::backgroundColourId, juce::Colours::darkgrey);
     playlistBox.setColour(juce::ListBox::textColourId, juce::Colours::white);
     addAndMakeVisible(playlistBox);
-
+    loadButton.setButtonText("Load File");
+    playButton.setButtonText("Play");
+    pauseButton.setButtonText("Pause");
+    stopButton.setButtonText("Stop");
+    restartButton.setButtonText("Restart");
     loopButton.setButtonText("Loop: OFF");
     muteButton.setButtonText("Mute");
     nextButton.setButtonText("Next >");
@@ -74,12 +75,14 @@ PlayerGUI::PlayerGUI()
     setBButton.setButtonText("Set B");
     clearABButton.setButtonText("Clear AB");
     reverbToggle.setButtonText("Reverb: OFF");
+    speedLabel.setText("Speed:", juce::dontSendNotification);
+    reverbLabel.setText("Reverb:", juce::dontSendNotification);
 
     isMuted = false;
     isLooping = false;
     previousVol = 0.5f;
 
-    setSize(600, 650);
+    setSize(850, 700);
     displayMetadata();
     startTimer(100);
 }
@@ -94,46 +97,62 @@ void PlayerGUI::paint(juce::Graphics& g)
 void PlayerGUI::resized()
 {
     int y = 10;
-    int margin = 10;
+    int margin = 15;
+    int buttonWidth = 75;
+    int buttonHeight = 30;
+    int spacing = 8;
+
+    loadButton.setBounds(margin, y, buttonWidth, buttonHeight);
+    playButton.setBounds(margin + buttonWidth + spacing, y, buttonWidth, buttonHeight);
+    pauseButton.setBounds(margin + 2 * (buttonWidth + spacing), y, buttonWidth, buttonHeight);
+    stopButton.setBounds(margin + 3 * (buttonWidth + spacing), y, buttonWidth, buttonHeight);
+    restartButton.setBounds(margin + 4 * (buttonWidth + spacing), y, buttonWidth, buttonHeight);
+    loopButton.setBounds(margin + 5 * (buttonWidth + spacing), y, buttonWidth, buttonHeight);
+
+    int controlButtonWidth = 75;
+    int controlStartX = getWidth() - margin - (5 * controlButtonWidth + 4 * spacing);
+
+    removeButton.setBounds(controlStartX, y, controlButtonWidth, buttonHeight);
+    clearButton.setBounds(controlStartX + controlButtonWidth + spacing, y, controlButtonWidth, buttonHeight);
+    setAButton.setBounds(controlStartX + 2 * (controlButtonWidth + spacing), y, controlButtonWidth, buttonHeight);
+    setBButton.setBounds(controlStartX + 3 * (controlButtonWidth + spacing), y, controlButtonWidth, buttonHeight);
+    clearABButton.setBounds(controlStartX + 4 * (controlButtonWidth + spacing), y, controlButtonWidth, buttonHeight);
+
+    y += buttonHeight + 15;
+    int progressSliderWidth = getWidth() - 2 * margin - 120;
+    posLabel.setBounds(margin, y, 50, 20);
+    positionSlider.setBounds(margin + 55, y, progressSliderWidth, 40);
+    durationLabel.setBounds(margin + 55 + progressSliderWidth + 5, y, 50, 20);
+
+    y += 45;
+    int controlSliderHeight = 45;
+    int controlSliderWidth = 130;
+
+    volumeSlider.setBounds(margin, y, controlSliderWidth, controlSliderHeight);
+    muteButton.setBounds(margin + controlSliderWidth + 10, y, 70, buttonHeight);
     
-    loadButton.setBounds(margin, y, 80, 30);
-    playButton.setBounds(100, y, 60, 30);
-    pauseButton.setBounds(170, y, 60, 30);
-    stopButton.setBounds(240, y, 60, 30);
-    restartButton.setBounds(310, y, 70, 30);
-    loopButton.setBounds(390, y, 80, 30);
+    int navButtonWidth = 70;
+    int navStartX = (getWidth() - (4 * navButtonWidth + 3 * spacing)) / 2;
 
-    y += 40;
-    positionSlider.setBounds(margin, y, getWidth() - 2 * margin, 20);
+    prevButton.setBounds(navStartX, y, navButtonWidth, buttonHeight);
+    nextButton.setBounds(navStartX + navButtonWidth + spacing, y, navButtonWidth, buttonHeight);
+    goToStartButton.setBounds(navStartX + 2 * (navButtonWidth + spacing), y, navButtonWidth, buttonHeight);
+    goToEndButton.setBounds(navStartX + 3 * (navButtonWidth + spacing), y, navButtonWidth, buttonHeight);
 
-    y += 30;
-    prevButton.setBounds(margin, y, 60, 25);
-    nextButton.setBounds(70, y, 60, 25);
-    goToStartButton.setBounds(140, y, 70, 25);
-    goToEndButton.setBounds(220, y, 70, 25);
+    y += controlSliderHeight + 15;
+    speedLabel.setBounds(margin, y, 60, buttonHeight);
+    speedSlider.setBounds(margin + 65, y, controlSliderWidth, controlSliderHeight);
 
-    y += 35;
-    volumeSlider.setBounds(margin, y, 100, 20);
-    muteButton.setBounds(110, y, 60, 25);
-    reverbToggle.setBounds(180, y, 80, 25);
-    reverbSlider.setBounds(270, y, 100, 20);
+    reverbToggle.setBounds(margin + controlSliderWidth + 85, y, 110, buttonHeight);
+    reverbSlider.setBounds(margin + controlSliderWidth + 200, y, controlSliderWidth, controlSliderHeight);
 
-    y += 35;
-    metadataDisplay.setBounds(margin, y, getWidth() - 2 * margin, 60);
-
-    y += 70;
-    playlistBox.setBounds(margin, y, getWidth() - 2 * margin, 100);
-
-    y += 110;
-    removeButton.setBounds(margin, y, 80, 25);
-    clearButton.setBounds(90, y, 80, 25);
-
-    y += 35;
-    setAButton.setBounds(margin, y, 80, 25);
-    setBButton.setBounds(90, y, 80, 25);
-    clearABButton.setBounds(180, y, 90, 25);
+    y += controlSliderHeight + 25;
+    metadataDisplay.setBounds(margin, y, getWidth() - 2 * margin, 70);
+   
+    y += 75;
+    int playlistHeight = 120;
+    playlistBox.setBounds(margin, y, getWidth() - 2 * margin, playlistHeight);
 }
-
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
     if (button == &loadButton)
@@ -283,16 +302,33 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     }
 }
 
+void PlayerGUI::loadTrack(int trackIndex)
+{
+    if (trackIndex >= 0 && trackIndex < (int)playlist.size())
+    {
+        currentTrackIndex = trackIndex;
+        loadPlaylistFile(playlist[trackIndex]);
+    }
+}
+
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
         playerAudio.setGain((float)slider->getValue());
+
     if (slider == &positionSlider) {
         double newPos = slider->getValue() * playerAudio.getLength();
         playerAudio.setPosition(newPos);
+        updatePositionDisplay();
     }
+
     if (slider == &reverbSlider) {
         playerAudio.setReverbLevel((float)reverbSlider.getValue());
+    }
+
+    if (slider == &speedSlider) {
+        playerAudio.setSpeed(speedSlider.getValue());
+        displayMetadata();
     }
 }
 
@@ -325,11 +361,13 @@ void PlayerGUI::pauseButtonClicked()
 void PlayerGUI::goToStartButtonClicked()
 {
     playerAudio.goToStart();
+    updatePositionDisplay();
 }
 
 void PlayerGUI::goToEndButtonClicked()
 {
     playerAudio.goToEnd();
+    updatePositionDisplay();
 }
 
 void PlayerGUI::displayMetadata()
@@ -373,6 +411,7 @@ void PlayerGUI::loadPlaylistFile(const juce::File& file)
         displayMetadata();
         playlistBox.selectRow(currentTrackIndex);
         playlistBox.repaint();
+        updatePositionDisplay();
     }
 }
 
@@ -388,7 +427,13 @@ void PlayerGUI::updateUI()
         double currentPos = playerAudio.getPosition();
         double length = playerAudio.getLength();
         positionSlider.setValue(currentPos / length, juce::dontSendNotification);
+        updatePositionDisplay();
     }
+}
+void PlayerGUI::updatePositionDisplay()
+{
+    posLabel.setText(playerAudio.getFormattedPosition(), juce::dontSendNotification);
+    durationLabel.setText(playerAudio.getFormattedDuration(), juce::dontSendNotification);
 }
 
 void PlayerGUI::removeSelectedTrack()
@@ -490,6 +535,7 @@ juce::Component* PlayerGUI::refreshComponentForRow(int rowNumber, bool isRowSele
 void PlayerGUI::timerCallback()
 {
     updateUI();
+
     if (currentTrackIndex >= 0 && playlistBox.getSelectedRow() != currentTrackIndex)
     {
         playlistBox.selectRow(currentTrackIndex);
@@ -497,4 +543,3 @@ void PlayerGUI::timerCallback()
 
     playlistBox.repaint();
 }
-
