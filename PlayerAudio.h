@@ -1,5 +1,4 @@
 #pragma once
-
 #include <JuceHeader.h>
 
 class PlayerAudio
@@ -20,7 +19,10 @@ public:
     bool ABloop = false;
     double aPoint = 0.0;
     double bPoint = 0.0;
+    
     void setSpeed(double speed);
+    double getSpeed() const { return speed; }
+
     bool loadFile(const juce::File& file);
     void play();
     void stop();
@@ -38,6 +40,7 @@ public:
     juce::String getArtist() const;
     juce::String getAlbum() const;
     juce::String getFormattedDuration() const;
+    juce::String getFormattedPosition() const;
 
     void setReverbLevel(float level);
     void setReverbEnabled(bool enabled);
@@ -46,13 +49,15 @@ private:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
+    juce::ResamplingAudioSource resampleSource{ &transportSource, false };
+
     juce::File currentFile;
     bool isPaused = false;
 
     juce::Reverb reverb;
     bool reverbEnabled = false;
     float reverbLevel = 0.0f;
+    double speed = 1.0;
+
     juce::String extractArtistFromFilename(const juce::String& filename) const;
 };
-
-
