@@ -1,16 +1,51 @@
-
-
 #include "MainComponent.h"
 
 MainComponent::MainComponent()
 {
     addAndMakeVisible(player1);
     addAndMakeVisible(player2);
-    setSize(900, 700);
+    addAndMakeVisible(mixVol1);
+    addAndMakeVisible(mixVol2);
+    addAndMakeVisible(mixToggle);
+    addAndMakeVisible(mixLabel);
+
+    mixVol1.setRange(0.0, 1.0, 0.01);
+    mixVol1.setValue(0.7);
+    mixVol2.setRange(0.0, 1.0, 0.01);
+    mixVol2.setValue(0.7);
+
+    mixToggle.setButtonText("Mix Mode: OFF");
+    mixToggle.onClick = [this] {
+        mixingEnabled = !mixingEnabled;
+        mixToggle.setButtonText(mixingEnabled ? "Mix Mode: ON" : "Mix Mode: OFF");
+      
+        if (mixingEnabled && player1.playlist.size() >= 1)
+        {
+            player1.loadTrack(0);
+            if (player1.playlist.size() >= 2)
+            {
+                player2.loadTrack(1);
+            }
+            else
+            {
+                player2.loadTrack(0);
+                player2.setGain(0.0f);
+            }
+            player1.play();
+            player2.play();
+        }
+        else if (!mixingEnabled)
+        {
+            player2.stop();
+            player2.setGain(0.7f);
+        }
+        };
+
+    mixLabel.setText("Mixer - Player1 Volume | Player2 Volume", juce::dontSendNotification);
+    mixLabel.setJustificationType(juce::Justification::centred);
+
+    setSize(1100, 900);
     setAudioChannels(0, 2);
-
-
-
 }
 
 MainComponent::~MainComponent()
@@ -22,29 +57,78 @@ void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate
 {
     player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
     player2.prepareToPlay(samplesPerBlockExpected, sampleRate);
-
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    player1.getNextAudioBlock(bufferToFill);
-    player2.getNextAudioBlock(bufferToFill);
+    if (mixingEnabled)
+    {
+        mixTracks(bufferToFill);
+    }
+    else
+    {
+        player1.getNextAudioBlock(bufferToFill);
+    }
+}
+
+void MainComponent::mixTracks(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+    bufferToFill.clearActiveBufferRegion();
+
+    if (player1.playlist.size() > 0)
+    {
+        juce::AudioBuffer<float> temp1(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
+        juce::AudioBuffer<float> temp2(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
+
+        juce::AudioSourceChannelInfo info1(&temp1, 0, bufferToFill.numSamples);
+        juce::AudioSourceChannelInfo info2(&temp2, 0, bufferToFill.numSamples);
+
+        player1.getNextAudioBlock(info1);
+        player2.getNextAudioBlock(info2);
+
+        float vol1 = (float)mixVol1.getValue();
+        float vol2 = (float)mixVol2.getValue();
+
+        for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
+        {
+            bufferToFill.buffer->addFrom(channel, bufferToFill.startSample,
+                temp1, channel, 0, bufferToFill.numSamples, vol1);
+
+            bufferToFill.buffer->addFrom(channel, bufferToFill.startSample,
+                temp2, channel, 0, bufferToFill.numSamples, vol2);
+        }
+    }
+    else
+    {
+        player1.getNextAudioBlock(bufferToFill);
+    }
 }
 
 void MainComponent::releaseResources()
 {
     player1.releaseResources();
     player2.releaseResources();
-
 }
 
 void MainComponent::resized()
 {
     auto area = getLocalBounds();
-    player1.setBounds(area.removeFromTop(getHeight() / 2));
+    int mixerHeight = 80;
+    int playerHeight = (getHeight() - mixerHeight) / 2;
+
+    player1.setBounds(area.removeFromTop(playerHeight));
+    auto mixerArea = area.removeFromTop(mixerHeight);
+    mixLabel.setBounds(mixerArea.removeFromTop(25));
+
+    int sliderWidth = 120;
+    int spacing = 20;
+    int startX = (mixerArea.getWidth() - (2 * sliderWidth + spacing + 100)) / 2;
+
+    mixVol1.setBounds(startX, mixerArea.getY() + 10, sliderWidth, 35);
+    mixToggle.setBounds(startX + sliderWidth + 10, mixerArea.getY() + 15, 100, 25);
+    mixVol2.setBounds(startX + sliderWidth + 120, mixerArea.getY() + 10, sliderWidth, 35);
+
     player2.setBounds(area);
-
+    player1.resized();
+    player2.resized();
 }
-
-
-
