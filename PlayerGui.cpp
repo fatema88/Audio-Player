@@ -41,8 +41,13 @@ PlayerGUI::PlayerGUI()
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
 
-    positionSlider.setRange(0.0, 1.0);
-    positionSlider.addListener(this);
+   positionSlider.setRange(0.0, 1.0);
+   positionSlider.setValue(0.0);
+   positionSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+   positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+   positionSlider.addListener(this);
+   addAndMakeVisible(positionSlider);
+    
     addAndMakeVisible(positionSlider);
     addAndMakeVisible(posLabel);
     addAndMakeVisible(durationLabel);
@@ -543,3 +548,4 @@ void PlayerGUI::timerCallback()
 
     playlistBox.repaint();
 }
+
