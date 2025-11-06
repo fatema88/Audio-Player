@@ -1,3 +1,26 @@
+/*
+********************************** Audio Player project *******************************
+* Names                          Ids                    Distribution:
+* Fatma Tarek Mostafa             20242237              *Features Number 
+                                                           4,7,10
+                                                        *The first bonus feature
+
+* sara Mosaad talaat              20240230              *Features Number
+                                                            2,5,8
+                                                       *the second and the third bonus features
+
+* Demiana Nabil sabry             20242117             Features Number 
+                                                           3,6,9
+Section Number:S21.
+
+
+
+
+
+*Githup Link:https://github.com/fatema88/Audio-Player
+* Report Link:https://drive.google.com/file/d/15A-IUeMSqmkV7TZMAH2tmh9eJxcONQWZ/view?usp=drivesdk
+* video Link:https://drive.google.com/file/d/1a6Tqnli0KJZzxfFxhjpr4Qta0WWXK7gb/view?usp=drivesdk
+*/
 #include <JuceHeader.h>
 #include "MainComponent.h"
 
@@ -51,3 +74,4 @@ private:
 };
 
 START_JUCE_APPLICATION(Application)
+
