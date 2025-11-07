@@ -18,26 +18,28 @@ MainComponent::MainComponent()
     mixToggle.onClick = [this] {
         mixingEnabled = !mixingEnabled;
         mixToggle.setButtonText(mixingEnabled ? "Mix Mode: ON" : "Mix Mode: OFF");
-      
-        if (mixingEnabled && player1.playlist.size() >= 1)
+
+
+        if (mixingEnabled)
         {
-            player1.loadTrack(0);
-            if (player1.playlist.size() >= 2)
+            if (player2.playlist.empty() && !player1.playlist.empty())
             {
-                player2.loadTrack(1);
+                for (auto& file : player1.playlist)
+                {
+                    player2.playlist.push_back(file);
+                }
+                player2.currentTrackIndex = 0;
+                player2.loadPlaylistFile(player2.playlist[0]);
             }
-            else
+            if (!player2.playlist.empty())
             {
-                player2.loadTrack(0);
-                player2.setGain(0.0f);
+                if (player2.currentTrackIndex < 0)
+                {
+                    player2.currentTrackIndex = 0;
+                    player2.loadPlaylistFile(player2.playlist[0]);
+                }
+                player2.play();
             }
-            player1.play();
-            player2.play();
-        }
-        else if (!mixingEnabled)
-        {
-            player2.stop();
-            player2.setGain(0.7f);
         }
         };
 
@@ -61,13 +63,20 @@ void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
+    bufferToFill.clearActiveBufferRegion();
+
     if (mixingEnabled)
     {
         mixTracks(bufferToFill);
     }
     else
     {
-        player1.getNextAudioBlock(bufferToFill);
+        if (player1.currentTrackIndex >= 0) {
+            player1.getNextAudioBlock(bufferToFill);
+        }
+        else if (player2.currentTrackIndex >= 0) {
+            player2.getNextAudioBlock(bufferToFill);
+        }
     }
 }
 
@@ -75,32 +84,36 @@ void MainComponent::mixTracks(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     bufferToFill.clearActiveBufferRegion();
 
-    if (player1.playlist.size() > 0)
+    float vol1 = (float)mixVol1.getValue();
+    float vol2 = (float)mixVol2.getValue();
+
+    if (player1.currentTrackIndex >= 0)
     {
-        juce::AudioBuffer<float> temp1(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
-        juce::AudioBuffer<float> temp2(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
+        juce::AudioBuffer<float> tempBuffer1(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
+        juce::AudioSourceChannelInfo tempInfo1(&tempBuffer1, 0, bufferToFill.numSamples);
 
-        juce::AudioSourceChannelInfo info1(&temp1, 0, bufferToFill.numSamples);
-        juce::AudioSourceChannelInfo info2(&temp2, 0, bufferToFill.numSamples);
-
-        player1.getNextAudioBlock(info1);
-        player2.getNextAudioBlock(info2);
-
-        float vol1 = (float)mixVol1.getValue();
-        float vol2 = (float)mixVol2.getValue();
+        player1.getNextAudioBlock(tempInfo1);
 
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
         {
             bufferToFill.buffer->addFrom(channel, bufferToFill.startSample,
-                temp1, channel, 0, bufferToFill.numSamples, vol1);
-
-            bufferToFill.buffer->addFrom(channel, bufferToFill.startSample,
-                temp2, channel, 0, bufferToFill.numSamples, vol2);
+                tempBuffer1, channel, 0, bufferToFill.numSamples, vol1);
         }
     }
-    else
+
+    if (player2.currentTrackIndex >= 0)
     {
-        player1.getNextAudioBlock(bufferToFill);
+        juce::AudioBuffer<float> tempBuffer2(bufferToFill.buffer->getNumChannels(), bufferToFill.numSamples);
+        juce::AudioSourceChannelInfo tempInfo2(&tempBuffer2, 0, bufferToFill.numSamples);
+
+        player2.getNextAudioBlock(tempInfo2);
+
+
+        for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
+        {
+            bufferToFill.buffer->addFrom(channel, bufferToFill.startSample,
+                tempBuffer2, channel, 0, bufferToFill.numSamples, vol2);
+        }
     }
 }
 
@@ -113,10 +126,13 @@ void MainComponent::releaseResources()
 void MainComponent::resized()
 {
     auto area = getLocalBounds();
+
+
     int mixerHeight = 80;
     int playerHeight = (getHeight() - mixerHeight) / 2;
 
     player1.setBounds(area.removeFromTop(playerHeight));
+
     auto mixerArea = area.removeFromTop(mixerHeight);
     mixLabel.setBounds(mixerArea.removeFromTop(25));
 
@@ -129,6 +145,8 @@ void MainComponent::resized()
     mixVol2.setBounds(startX + sliderWidth + 120, mixerArea.getY() + 10, sliderWidth, 35);
 
     player2.setBounds(area);
+
+    // إعادة رسم المكونات الفرعية
     player1.resized();
     player2.resized();
 }
