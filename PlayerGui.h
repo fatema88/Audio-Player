@@ -20,7 +20,7 @@ public:
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
     void releaseResources();
     void updateUI();
-
+    bool isPlaying() const { return playerAudio.isPlaying(); }
     int getNumRows() override;
     void paintListBoxItem(int rowNumber, juce::Graphics& g,
         int width, int height, bool rowIsSelected) override;
@@ -30,14 +30,16 @@ public:
         juce::Component* existingComponentToUpdate) override;
 
     void timerCallback() override;
+
     std::vector<juce::File> playlist;
     int currentTrackIndex = -1;
+
     void loadTrack(int trackIndex);
     void setGain(float gain) { playerAudio.setGain(gain); }
     void play() { playerAudio.play(); }
     void stop() { playerAudio.stop(); }
     bool hasTracks() const { return !playlist.empty(); }
-
+void loadPlaylistFile(const juce::File& file);
 private:
     PlayerAudio playerAudio;
 
@@ -87,11 +89,12 @@ private:
     void goToStartButtonClicked();
     void goToEndButtonClicked();
     void displayMetadata();
-    void loadPlaylistFile(const juce::File& file);
+    
     void updatePlaylistDisplay();
     void removeSelectedTrack();
     void clearPlaylist();
     void updatePositionDisplay();
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
+
