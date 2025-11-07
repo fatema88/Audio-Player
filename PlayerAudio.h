@@ -19,7 +19,7 @@ public:
     bool ABloop = false;
     double aPoint = 0.0;
     double bPoint = 0.0;
-    
+
     void setSpeed(double speed);
     double getSpeed() const { return speed; }
 
@@ -33,8 +33,7 @@ public:
     void pause();
     void goToStart();
     void goToEnd();
-    bool isPlaying() const;
-
+    bool isPlaying() const { return transportSource.isPlaying(); }
     juce::StringArray getMetadata() const;
     juce::String getTitle() const;
     juce::String getArtist() const;
@@ -42,9 +41,9 @@ public:
     juce::String getFormattedDuration() const;
     juce::String getFormattedPosition() const;
 
+
     void setReverbLevel(float level);
     void setReverbEnabled(bool enabled);
-
 private:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
@@ -57,7 +56,10 @@ private:
     juce::Reverb reverb;
     bool reverbEnabled = false;
     float reverbLevel = 0.0f;
+
     double speed = 1.0;
 
+
     juce::String extractArtistFromFilename(const juce::String& filename) const;
+   
 };
